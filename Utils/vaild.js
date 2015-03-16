@@ -34,9 +34,9 @@ function vaild(data, type){
         case "unsigned Number":
             result = vaild(data, Number) && data >=0;break;
         case "bin":
-            result = (vaild(data, String) && vaild(data.match(/^(0|1)+$/), Array)) || vaild(data, "float");break;
+            result = (vaild(data, String) && data.match(/^(0|1)+$/)) || vaild(data, "float");break;
         case "hex":
-            result = (vaild(data, String) && vaild(data.toLowerCase().match(/^(0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f)+$/), Array)) || vaild(data, "float");break;
+            result = (vaild(data, String) && data.toLowerCase().match(/^(0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f)+$/)) || vaild(data, "float");break;
         case "bool":
             result = (data === true || data === false) || (!!data === true || !!data === false);break;
         case "undefined":
