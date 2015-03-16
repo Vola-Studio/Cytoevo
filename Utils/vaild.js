@@ -46,4 +46,4 @@ function vaild(data, type){
     }
     return !!result;
 }
-exports = vaild;
+module.exports = vaild;
