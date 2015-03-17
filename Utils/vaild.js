@@ -15,7 +15,7 @@ function vaild(data, type){
         case Function:
             result = data instanceof Function;break;
         case Number:
-            result = vaild(data, "NaN") || (Number(data) === data);break;
+            result = Number(data) === data;break;
         case String:
             result = data instanceof String || typeof data === "string";break;
         case RegExp:
