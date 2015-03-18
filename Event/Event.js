@@ -90,3 +90,8 @@ function cancel(name, fnName){
         return false;
     }
 }
+module.exports = {
+    on: on,
+    publish: publish,
+    cancel: cancel
+}
