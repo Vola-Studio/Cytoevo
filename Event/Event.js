@@ -12,7 +12,7 @@
  *
  * Event.publish(name, args, _this) 发布name事件
  * 参数:
- * Event.publish(String name, Array args*, Object _this*)
+ * Event.publish(String name, Array args*, * _this*)
  * 
  * 抛出错误:
  * TypeError: name is not a String
@@ -28,17 +28,44 @@
  * TypeError: fnName is not a String
  *     name和fnName应该是字符串
  */
+require("../Utils/format.js");
+var vaild = require("../Utils/vaild.js");
+function console_red(a,b){
+    console.log("\x1B[31m", a, b, "\x1B[39m");
+}
 var pool = {};
 //事件订阅器
 function on(name, fnName, fn){
-    if(!(pool[name] instanceof Object)){
+    if(!vaild(name, String)){
+        console_red("Event.on: name is not a String:", name);
+        throw "TypeError: name is not a String";
+    }
+    if(!vaild(fnName, String)){
+        console_red("Event.on: fnName is not a String:", fnName);
+        throw "TypeError: fnName is not a String";
+    }
+    if(!vaild(fn, Function)){
+        console_red("Event.on: fn is not a Function:", fn);
+        throw "TypeError: fn is not a Function";
+    }
+    //逻辑
+    if(!vaild(pool[name], Object)){
         pool[name] = {};
     }
     pool[name][fnName] = fn;
 }
 //事件发布器
 function publish(name, args, _this){
-    if(!(pool[name] instanceof Object)){
+    if(!vaild(name, String)){
+        console_red("Event.publish: name is not a String:", name);
+        throw "TypeError: name is not a String";
+    }
+    if(!(vaild(args, Array) || vaild(args, "undefined"))){
+        console_red("Event.publish: agrs is not a Array:", fnName);
+        throw "TypeError: args is not a Array";
+    }
+    //检查
+    if(!vaild(pool[name], Object)){
         console.warn("[Event/Event.js] 事件发布：没有名为%1的事件".format(name));
         return;
     }
@@ -48,6 +75,15 @@ function publish(name, args, _this){
     }
 }
 function cancel(name, fnName){
+    if(!vaild(name, String)){
+        console_red("Event.cancel: name is not a String:", name);
+        throw "TypeError: name is not a String";
+    }
+    if(!vaild(fnName, String)){
+        console_red("Event.cancel: fnName is not a String:", fnName);
+        throw "TypeError: fnName is not a String";
+    }
+    //逻辑
     try{
         return delete pool[name][fnName];
     }catch(e){
