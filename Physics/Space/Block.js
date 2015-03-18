@@ -1,6 +1,6 @@
 /* Block 生成单位的类
  *
- * Block(opt) 生成一个单位
+ * Block(opt) [private] 生成一个单位
  * 参数:
  * new Block(Object opt{
  *     unsigned int x,
@@ -14,8 +14,19 @@
  * TypeError: opt.y is not a unsigned int
  *     x和y应该是大于等于0的整数
  */
+var vaild = require("../../Utils/vaild.js");
 function Block(opt){
-    //TODO 检查条件
+    //TODO Check Call as function
+    if(!vaild(opt.x, "unsigned int")){
+        console.log("\x1B[31mBlock: opt.x:", opt.x, "is not unsigned int\x1B[39m");
+        throw "TypeError: opt.x is not a unsigned int";
+    }
+    if(!vaild(opt.y, "unsigned int")){
+        console.log("\x1B[31mBlock: opt.y:", opt.y, "is not unsigned int\x1B[39m");
+        throw "TypeError: opt.y is not a unsigned int";
+    }
+
+
     this.x = opt.x;
     this.y = opt.y;
     this.biomes = [,,,];
