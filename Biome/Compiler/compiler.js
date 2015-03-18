@@ -1,8 +1,24 @@
+/* GESCompiler Ges编译器
+ * new compiler_v1_x16(code)
+ * 参数:
+ * new compiler_v1_x16((String bin) code)
+ * 
+ * 抛出错误:
+ * TypeError: Code is not bin
+ *     code 应该是由0和1组成的字符串
+ * 
+ * compiler_v1_x16.prototype.read() [private] 读取16位GES
+ * 返回值:
+ * String bin 16位由0和1组成的字符串
+ * Object Function [compiler_v1_x16.functionEndSymbol]专用结束符号
+ * 
+ * compiler_v1_x16.compiler() 编译GES
+ */
 var vaild = require("../../Utils/vaild.js");
 function compiler_v1_x16(code){
-    if(vaild(code, "bin")){
+    if(!vaild(code, "bin")){
         console.log("\x1B[31mCompiler_v1_x16:", code," is not vaild code\x1B[39m");
-        throw "Compiler_v1_x16: Invaild Binary Code";
+        throw "TypeError: Code is not bin";
     };
     
     this.code = code;
