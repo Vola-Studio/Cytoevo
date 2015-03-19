@@ -37,4 +37,4 @@ function Block(opt){
     
 }
 
-exports = Block;
+module.exports = Block;

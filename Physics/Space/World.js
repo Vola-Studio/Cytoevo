@@ -8,6 +8,7 @@
  * })
  *
  * 抛出错误:
+ * TypeError: opt is not a object
  * TypeError: opt.x is not a unsigned int
  * TypeError: opt.y is not a unsigned int
  *     x和y应该是大于等于0的整数
@@ -27,10 +28,24 @@
  * 位于(x,y)的Block || null
  */
 //当前世界和上一个世界
-var world;
+var world = null;
 function WorldGenerator(opt){
-    var Block = require("Block.js");
-    //TODO 条件检查
+    var Block = require("./Block.js");
+    //条件检查
+    if(!vaild(opt, Object)){
+        console.log(opt);
+        throw "TypeError: opt is not a object";
+    }
+    if(!vaild(opt.x, "unsigned int")){
+        console.log(opt.x);
+        throw "TypeError: opt.x is not a unsigned int";
+    }
+    if(!vaild(opt.y, "unsigned int")){
+        console.log(opt.y);
+        throw "TypeError: opt.y is not a unsigned int";
+    }
+
+    //删除旧世界
     world = [];
     
     //开始建立大小为x,y的世界
@@ -50,8 +65,18 @@ function WorldGenerator(opt){
 function getWorld(){
     return world;
 }
-function getBlock(x, y)){
-    //TODO 条件检查
+function getBlock(x, y){
+    //条件检查
+    if(!vaild(x, "unsigned int")){
+        console.log(opt.x);
+        throw "TypeError: x is not a unsigned int";
+    }
+    if(!vaild(y, "unsigned int")){
+        console.log(opt.y);
+        throw "TypeError: y is not a unsigned int";
+    }
+
+    //获取网格
     if(world[x]){
         if(world[x][y]){
             return world[x][y];
@@ -60,7 +85,7 @@ function getBlock(x, y)){
     return null;
 }
 
-exports = {
+module.exports = {
     generator: WorldGenerator,
     getWorld: getWorld,
     getBlock: getBlock
