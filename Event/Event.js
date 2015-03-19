@@ -49,7 +49,7 @@ function on(name, fnName, fn){
         throw "TypeError: fn is not a Function";
     }
     //逻辑
-    if(!vaild(pool[name], Object)){
+    if(!pool[name]){
         pool[name] = {};
     }
     pool[name][fnName] = fn;
