@@ -29,6 +29,7 @@
  */
 //当前世界和上一个世界
 var world = null;
+var vaild = require("../../Utils/vaild.js");
 function WorldGenerator(opt){
     var Block = require("./Block.js");
     //条件检查
