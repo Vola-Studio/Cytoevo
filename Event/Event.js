@@ -27,6 +27,10 @@
  * TypeError: name is not a String
  * TypeError: fnName is not a String
  *     name和fnName应该是字符串
+ *
+ * Event.flags的命名须知:
+ * Event.flags.模块名.Flag名称
+ * Event.flags.Physics_World.Just_Like_This
  */
 require("../Utils/format.js");
 var vaild = require("../Utils/vaild.js");
