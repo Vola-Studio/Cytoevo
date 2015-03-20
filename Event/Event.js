@@ -30,10 +30,13 @@
  */
 require("../Utils/format.js");
 var vaild = require("../Utils/vaild.js");
+
 function console_red(a,b){
     console.log("\x1B[31m", a, b, "\x1B[39m");
 }
+
 var pool = {};
+
 //事件订阅器
 function on(name, fnName, fn){
     if(!vaild(name, String)){
@@ -54,6 +57,7 @@ function on(name, fnName, fn){
     }
     pool[name][fnName] = fn;
 }
+
 //事件发布器
 function publish(name, args, _this){
     if(!vaild(name, String)){
@@ -74,6 +78,8 @@ function publish(name, args, _this){
         pool[name][i].apply(_this, args);
     }
 }
+
+//取消事件
 function cancel(name, fnName){
     if(!vaild(name, String)){
         console_red("Event.cancel: name is not a String:", name);
@@ -93,5 +99,6 @@ function cancel(name, fnName){
 module.exports = {
     on: on,
     publish: publish,
-    cancel: cancel
+    cancel: cancel,
+    flags: {}
 }
