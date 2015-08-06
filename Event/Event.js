@@ -45,15 +45,15 @@ var pool = {};
 function on(name, fnName, fn){
     if(!vaild(name, String)){
         console_red("Event.on: name is not a String:", name);
-        throw "TypeError: name is not a String";
+        throw new TypeError("name is not a String");
     }
-    if(!vaild(fnName, String)){
-        console_red("Event.on: fnName is not a String:", fnName);
-        throw "TypeError: fnName is not a String";
+    if(!vaild(fKey, String)){
+        console_red("Event.on: fKey is not a String:", fKey);
+        throw new TypeError("fKey is not a String");
     }
     if(!vaild(fn, Function)){
         console_red("Event.on: fn is not a Function:", fn);
-        throw "TypeError: fn is not a Function";
+        throw new TypeError("fn is not a Function");
     }
     //逻辑
     if(!pool[name]){
@@ -66,11 +66,11 @@ function on(name, fnName, fn){
 function publish(name, args, _this){
     if(!vaild(name, String)){
         console_red("Event.publish: name is not a String:", name);
-        throw "TypeError: name is not a String";
+        throw new TypeError("name is not a String");
     }
     if(!(vaild(args, Array) || vaild(args, "undefined"))){
-        console_red("Event.publish: agrs is not a Array:", fnName);
-        throw "TypeError: args is not a Array";
+        console_red("Event.publish: agrs is not a Array:", args);
+        throw new TypeError("args is not a Array");
     }
     //检查
     if(!vaild(pool[name], Object)){
@@ -87,15 +87,15 @@ function publish(name, args, _this){
 function cancel(name, fnName){
     if(!vaild(name, String)){
         console_red("Event.cancel: name is not a String:", name);
-        throw "TypeError: name is not a String";
+        throw new TypeError("name is not a String");
     }
-    if(!vaild(fnName, String)){
-        console_red("Event.cancel: fnName is not a String:", fnName);
-        throw "TypeError: fnName is not a String";
+    if(!vaild(fKey, String)){
+        console_red("Event.cancel: fnName is not a String:", fKey);
+        throw new TypeError("fKey is not a String");
     }
     //逻辑
     try{
-        return delete pool[name][fnName];
+        return delete pool[name][fKey];
     }catch(e){
         return false;
     }
