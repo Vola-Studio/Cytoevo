@@ -1,6 +1,9 @@
-/* String.prototype.format() 输出格式化字符串
- * 参数:
- * "".format(* data1, * data2, ...， * data9)
+/** @module */
+
+/** Formats the string.
+ * @param  Arguments that are tostring-able.
+ * @return Formatted string.
+ * @see    http://stackoverflow.com/questions/610406/
  */
 String.prototype.format = function(){
     return this.replace(/%1/, arguments[0])
