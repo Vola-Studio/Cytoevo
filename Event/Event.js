@@ -1,47 +1,33 @@
-/* Event 事件中心
- * 
- * Event.on(name, fnName, fn) 订阅name事件，回调函数是名为fnName的fn
- * 参数:
- * Event.on(String name, String fnName, Function fn)
- * 
- * 抛出错误:
- * TypeError: name is not a String
- * TypeError: fnName is not a String
- * TypeError: fn is not a function
- *     name和fnName应该是字符串, fn应该是一个函数
- *
- * Event.publish(name, args, _this) 发布name事件
- * 参数:
- * Event.publish(String name, Array args*, * _this*)
- * 
- * 抛出错误:
- * TypeError: name is not a String
- * TypeError: args is not a Array
- *     name应该是字符串, args应该是数组或不提供
- *
- * Event.cancel(name, fnName) 根据订阅器名称取消订阅
- * 参数:
- * Event.cancel(String name, String fnName)
- * 
- * 抛出错误:
- * TypeError: name is not a String
- * TypeError: fnName is not a String
- *     name和fnName应该是字符串
- *
- * Event.flags的命名须知:
- * Event.flags.模块名.Flag名称
- * Event.flags.Physics_World.Just_Like_This
+/** @module
+ * @file Event controllers.
+ * @requires ../Utils/format.js
+ * @requires ../Utils/valid.js
+ * @copyright zjwpeter 2014-2015 <zjwpeter@gmail.com>
+ * @license GPL-3.0+
  */
+
 require("../Utils/format.js");
 var vaild = require("../Utils/vaild.js");
 
+// TODO: Deprecate this.
 function console_red(a,b){
-    console.log("\x1B[31m", a, b, "\x1B[39m");
+    console.error("\x1B[31m", a, b, "\x1B[39m");
 }
 
+/** Event Pool. @private */
 var pool = {};
+/** Event Flags. @static
+* Please follow the `Event.flags.Module_Name.Flag_Name` scheme. */
+var flags = {};
 
-//事件订阅器
+/**
+* Suscribes for a event.
+*
+* @param {string} name - Event Name.
+* @param {string} fKey - Function name key.
+* @param {function} fn - The function to execute in publish.
+* @throws {TypeError}    All type mismatch.
+*/
 function on(name, fnName, fn){
     if(!vaild(name, String)){
         console_red("Event.on: name is not a String:", name);
@@ -55,14 +41,22 @@ function on(name, fnName, fn){
         console_red("Event.on: fn is not a Function:", fn);
         throw new TypeError("fn is not a Function");
     }
-    //逻辑
+    // Finally adds the stuffs to the pool.
     if(!pool[name]){
         pool[name] = {};
     }
     pool[name][fnName] = fn;
 }
 
-//事件发布器
+/**
+* Publishs a event.
+*
+* @param {string} name - Event Name.
+* @param {string} args - Argument to pass to each function.
+* @param         _this - The `this` context for the functions.
+* @throws {TypeError}    All type mismatch.
+* @throws Everything thrown by event processors.
+*/
 function publish(name, args, _this){
     if(!vaild(name, String)){
         console_red("Event.publish: name is not a String:", name);
@@ -72,7 +66,7 @@ function publish(name, args, _this){
         console_red("Event.publish: agrs is not a Array:", args);
         throw new TypeError("args is not a Array");
     }
-    //检查
+    // Checks for the existance
     if(!vaild(pool[name], Object)){
         console.warn("[Event/Event.js] 事件发布：没有名为%1的事件".format(name));
         return;
@@ -83,8 +77,15 @@ function publish(name, args, _this){
     }
 }
 
-//取消事件
-function cancel(name, fnName){
+/**
+* Cancels subscrption
+*
+* @param {string} name - Event Name.
+* @param {string} fKey - Function name key.
+* @throws {TypeError}    All type mismatch.
+* @return {Boolean}      False on failure (e.g. non-exist) and otherwise true.
+*/
+function cancel(name, fKey){
     if(!vaild(name, String)){
         console_red("Event.cancel: name is not a String:", name);
         throw new TypeError("name is not a String");
@@ -93,7 +94,7 @@ function cancel(name, fnName){
         console_red("Event.cancel: fnName is not a String:", fKey);
         throw new TypeError("fKey is not a String");
     }
-    //逻辑
+    // Real stuff
     try{
         return delete pool[name][fKey];
     }catch(e){
@@ -104,5 +105,5 @@ module.exports = {
     on: on,
     publish: publish,
     cancel: cancel,
-    flags: {}
+    flags: flags
 }
