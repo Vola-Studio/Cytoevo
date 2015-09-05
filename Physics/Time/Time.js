@@ -7,9 +7,6 @@
  * int Time.tick [get] 当前时间
  * 
  * void Time.tick [set] 设置时间 传入任何值都会报错
- * 抛出错误:
- * You can't travel in time!
- *     该值不允许设置
  *
  * Time_Pause_Status_Changed [Event] [bool ifRunning]
  *     当暂停状态改变时产生的事件
@@ -40,6 +37,6 @@ module.exports = {
     //获取和设置Time的Tick数
     get tick(){return tick;},
     set tick(val){
-        throw "You can't travel in time!";
+        
     }
 }

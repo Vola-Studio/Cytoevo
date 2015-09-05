@@ -14,13 +14,7 @@
  * 
  * compiler_v1_x16.compiler() 编译GES
  */
-var vaild = require("../../Utils/vaild.js");
 function compiler_v1_x16(code){
-    if(!vaild(code, "bin")){
-        console.log("\x1B[31mCompiler_v1_x16:", code," is not vaild code\x1B[39m");
-        throw "TypeError: Code is not bin";
-    };
-    
     this.code = code;
     this.bits = 16;
     this.version = 1;
