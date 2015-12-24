@@ -1,19 +1,4 @@
-/* GESCompiler Ges编译器
- * new compiler_v1_x16(code)
- * 参数:
- * new compiler_v1_x16((String bin) code)
- * 
- * 抛出错误:
- * TypeError: Code is not bin
- *     code 应该是由0和1组成的字符串
- * 
- * compiler_v1_x16.prototype.read() [private] 读取16位GES
- * 返回值:
- * String bin 16位由0和1组成的字符串
- * Object Function [compiler_v1_x16.functionEndSymbol]专用结束符号
- * 
- * compiler_v1_x16.compiler() 编译GES
- */
+require("../../Utils/format.js");
 function compiler_v1_x16(code){
     this.code = code;
     this.bits = 16;
@@ -55,19 +40,21 @@ compiler_v1_x16.prototype.compiler = function(){
         //8位 0-255
         //条件检查
         case "0000": case "0001": 
-            return this.condChecker(
-                v(c, 4, 8),v(c, 8, 14),
+            return "this.query($1, $2, $3);"
+            .format(
+                v(c, 4, 8),
+                v(c, 8, 14),
                 {"00": ">","01": "<","10": "=","11": "!"}[c.substring(14)]
-            );
+             );
         //能量合成
         case "0010":
-            return this.energyMaker(matterID, matterNum);
+            return "this.energyMaker($1, $2);".format(matterID, matterNum);
         case "0101":
-            return this.getMatter(matterID, matterNum);
+            return "this.getMatter($1, $2);".format(matterID, matterNum);
         case "0110":
-            return this.throwMatter(matterID, matterNum);
+            return "this.throwMatter($1, $2);".format(matterID, matterNum);
         case "1001":
-            return this.muti();
+            return "this.divide();";
         case "1100":
         case "1110":
             var type = { "1100": "outside", "1110": "inside" }[c.substring(0, 4)];
@@ -85,8 +72,6 @@ compiler_v1_x16.prototype.compiler = function(){
             if(!this.read() == Function){
                 this.point -= this.bits;
             }
-            //当point所在位置已经是最后的函数了，将其指向前一段会将代码重新编译，然后将结果抛弃
-            //但是如果最后一个函数是空函数，则会导致无限循环
 
             var code = Function(allLine);
             var fnName = eventName + importance;
@@ -96,3 +81,4 @@ compiler_v1_x16.prototype.compiler = function(){
     }
     return "";
 }
+module.exports = compiler_v1_x16;
