@@ -1,84 +1,75 @@
-require("../../Utils/format.js");
-function compiler_v1_x16(code){
-    this.code = code;
-    this.bits = 16;
-    this.version = 1;
-    this.point = 0;
-    this.bin = {
-        out: {},
-        inside: {}
-    };
+const slice = (str, pat, acc) => {
+	let len = pat.shift()
+	if(undefined === len) return acc
+	return slice(str.slice(len), pat, acc.concat(str.substring(0, len)))
 }
-//编译器内部用于标示函数结束的符号
-compiler_v1_x16.functionEndSymbol = Function;
-
-//GES读取器
-compiler_v1_x16.prototype.read = function(){
-    if(this.point + this.bits > this.code.length){
-        //如果到底就返回endSymbol
-        return compiler_v1_x16.functionEndSymbol;
-    }
-    var cmd = this.code.substring(this.point, this.point + this.bits);
-    this.point += this.bits;
-    return cmd;
+function read(raw16){
+	let first = slice(raw16, [4], [])[0]
+	let nextPat
+	if(first === '0000' || first === '0001') nextPat = [4, 4, 6, 2] // , query type, wanted value, operator
+	else if (first === '1100' || first === '1110') nextPat = [4, 6] // type, eventName, _
+	else if (first === '0010' || first === '0101' || first === '0110') nextPat = [4, 8, 4] // , ele id, ele num
+	else nextPat = [4, 1]
+	return slice(raw16, nextPat, [])
 }
-compiler_v1_x16.getVal = function(c, s, t){
-    return parseInt(c.substring(s, t),2);
+const saveFunction = (state, object) => {
+	let [type, eventName, _] = state.lastFunction
+	state.data.push('')
+	object[type] = object[type] || {}
+	object[type][eventName] = new Function(state.data.join(';'))
 }
-compiler_v1_x16.prototype.compiler = function(){
-    var c = this.read(), v = compiler_v1_x16.getVal;
-    if(c == compiler_v1_x16.functionEndSymbol){
-        return false;
-    }
-    var magicNum = c.substring(0, 4);
-    var matterID = v(c, 4, 12), matterNum = v(c, 12, 16);
-    switch (magicNum) {
-        //3位 0-7
-        //4位 0-15
-        //5位 0-31
-        //6位 0-63
-        //8位 0-255
-        //条件检查
-        case "0000": case "0001": 
-            return "this.query($1, $2, $3);"
-            .format(
-                v(c, 4, 8),
-                v(c, 8, 14),
-                {"00": ">","01": "<","10": "=","11": "!"}[c.substring(14)]
-             );
-        //能量合成
-        case "0010":
-            return "this.energyMaker($1, $2);".format(matterID, matterNum);
-        case "0101":
-            return "this.getMatter($1, $2);".format(matterID, matterNum);
-        case "0110":
-            return "this.throwMatter($1, $2);".format(matterID, matterNum);
-        case "1001":
-            return "this.divide();";
-        case "1100":
-        case "1110":
-            var type = { "1100": "outside", "1110": "inside" }[c.substring(0, 4)];
-            var eventName = c.substring(4, 9);//5bits
-            var importance = c.substring(9, 12);//3bits
+const funcType = pattern => ({'1100': 'out', '1110': 'in'}[pattern])
+const eventType = a => a
 
-            var allLine = "";//所有代码
-            var thisLine = "";//当前行代码
-            do {
-                allLine += thisLine;
-                thisLine = this.compiler();
-            } while (thisLine != Function && thisLine);
-            //do...while在遇到下一个1100/1110段前会一直this,compiler() 也就是说1110/1100是函数分隔符
+const compiler_v2_x16_helper = (raw, object) => 
+	raw.match(/.{16}/g)
+	.reduce((state, ges) => 
+		read(ges).reduce((curriedPatternApply, pattern, index, array) => {
+			if (0 == index) { // when index = 0, generate the curry function for each pattern
+				switch (pattern) {
+					case '1100':
+					case '1110': return eventName => {
+						if (state.lastFunction) saveFunction(state, object)
+						state.lastFunction = [funcType(pattern), eventType(eventName)]
+						state.data = []
+						return ''
+					}
+					case '0010': return id => total => `this.generateEnergy(${id}, ${total})`
+					case '0101': return id => total => `this.require(${id}, ${total})`
+					case '0110': return id => total => `this.provide(${id}, ${total})`
+					case '1001': return _ => 'this.divide()'
+					case '0000':
+					case '0001': return queryType => wantedValue => operator => `if(this.query(${queryType}, ${wantedValue}, ${operator}))`
+					default:     return _ => ''
+				}
+			} else if (index == array.length - 1) {
+				let val = curriedPatternApply(pattern)
+				state.data.push(val)
+				console.log(val)
+				return state
+			} else return curriedPatternApply(pattern)
+		}, new Function())
+	, {
+		lastFunction: null,
+		data: []
+	})
+class compiler_v2_x16 {
+	constructor (code) {
+		let _code = code
+		Object.defineProperty(this, 'code', {get: function () {
+			return _code
+		}, set (value) {
+			_code = value
+			// TODO: 注册一个 N 轮后的事件
+			//       触发后再重编译
+			this.compiler()
+		}})
 
-            if(!this.read() == Function){
-                this.point -= this.bits;
-            }
-
-            var code = Function(allLine);
-            var fnName = eventName + importance;
-            this.bin[type] = this.bin[type] ? this.bin[type] : {};
-            this.bin[type][fnName] = code;
-            return Function;
-    }
-    return "";
+		this.bits = 16
+		this.version = 2
+	}
+	compiler () {
+		compiler_v2_x16_helper(this, this.code + '1100000000000000')
+	}
 }
-module.exports = compiler_v1_x16;
+export default compiler_v2_x16
