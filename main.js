@@ -1,5 +1,3 @@
-require("./Utils/format.js");
-require("./Event/Event.js");
-var time_cycle = require("./Event/Time.js");
-var world = require("./Physics/Space/World.js");
-var time = require("./Physics/Time/Time.js");
+// import Event from './Event/Event.js'
+import Time from './Physics/Time/Time.js'
+import World from './Physics/Space/World.js'
