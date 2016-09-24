@@ -28,7 +28,7 @@ let center = new class {
 	}
 	remove (symb, fnName) {
 		sets.shouldHave(symb)
-		if(Number.isInterger(fnName)) sets[symb][anonymous][length] = undefined
+		if(Number.isInterger(fnName)) delete sets[symb][anonymous][length]
 		else delete sets[symb][fnName]
 	}
 }
@@ -59,6 +59,3 @@ class Event {
 		set[anonymous].forEach(f => cancel || pub(f, this))
 	}
 }
-
-let start = center.once(symbs._, (e, d) => console.log('Event init: ' + d))
-new Event(symbs._, Date()).dispatch()
