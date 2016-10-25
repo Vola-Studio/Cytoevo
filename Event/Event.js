@@ -4,16 +4,18 @@ let sets = {
 	shouldHave: symb => sets[symb] = sets[symb] || {[anonymous]: []}
 }
 
-let center = new class {
+let center = new class EventCenter{
 	when (symb, fn, fnName = Symbol()) {
+		if (Array.isArray(symb)) 
+			return symb.map(v => this.when(v, fn, fnName))
+
 		sets.shouldHave(symb)
+
 		if(fnName.constructor === Symbol) {
 			sets[symb][anonymous].push(fn)
 			return sets[symb][anonymous].length - 1
 		}
-		else {
-			sets[symb][fnName] = fn
-		}
+		else sets[symb][fnName] = fn
 	}
 	once (symb, fn) {
 		let promFn
@@ -59,3 +61,8 @@ class Event {
 		set[anonymous].forEach(f => cancel || pub(f, this))
 	}
 }
+Event.when = center.when.bind(center)
+Event.once = center.once.bind(center)
+Event.remove = center.once.bind(center)
+
+export default {Event, Symbs: symbs}
